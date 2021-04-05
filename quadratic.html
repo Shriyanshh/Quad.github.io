@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Quadratic calculator</title>
+<!--library is being used for graphing -->
+	<script src="https://d3js.org/d3.v3.min.js"></script>
+   <script src="https://mauriciopoppe.github.io/function-plot/js/function-plot.js"></script>
+<!--this is the style for buttons and boxes used for user-input -->
+	<style type="text/css">
+body {
+  background-color: NavajoWhite;
+	text-align: center;
+}
+h2{
+text-align: center;
+}
+.layer{
+width: 70%;
+margin-right: auto;
+margin-left: auto;
+}
+
+section {
+border:4px solid BLACK;
+border-radius:0px;
+	background-color: #E0FFFF;
+box-shadow: 10px 10px 10px BLACK;
+float:left;
+height:360px;
+padding: 15px;
+margin:10px;
+}
+
+#plotSettings {
+width:160px;
+}
+
+#plot {
+width:550px;
+}
+
+.textboxclass {
+	height: 20px;
+	width: 60px;
+	display: inline-block;
+	border-radius: 4px;
+	background-color: #e7e7e7;
+	border: none;
+	color: #000000;
+	text-align: center;
+	font-size: 28px;
+	padding: 15px;
+	width: 100px;
+	transition: all 0.5s;
+	cursor: pointer;
+	margin: 5px;
+}
+.displayLetters{
+	font-size: 40px;
+	color:  #000000;
+}
+
+p{
+font-size: 20px;
+
+}
+.lol{
+	font-size: 20px;
+	color: #000000;
+}
+	.button {
+	  display: inline-block;
+	  border-radius: 4px;
+	  background-color: #f4511e;
+	  border: none;
+	  color: #000000;
+	  text-align: center;
+	  font-size: 28px;
+	  padding: 10px;
+	  width: 150px;
+	  transition: all 0.5s;
+	  cursor: pointer;
+	  margin: 5px;
+	}
+	.button2 {
+	  display: inline-block;
+	  border-radius: 4px;
+	  background-color: #f4511e;
+	  border: none;
+	  color: #000000;
+	  text-align: center;
+	  font-size: 25px;
+	  padding: 10px;
+	  width: 520px;
+	  transition: all 0.5s;
+	  cursor: pointer;
+	  margin: 5px;
+	}
+	#extras {
+
+		font: 30px Helvetica, Sans-Serif;
+		letter-spacing: -1px;
+		color: rgba(0,0,255,10.5);
+	}
+
+	#extras {
+		content: "Hello";
+		 left: 10px; top: 5px;
+		color: rgba(300,50,0,1.5);
+	}
+
+}
+	</style>
+</head>
+
+<body>
+	<div class="container">
+		<div class="display">
+
+				<p id="extras">ROOTS: <b><var id="test"></var></b>
+			<p id="extras">DISCRIMINANT: <b><var id="discrimante"></var></b><br></br>
+				VERTEX: <b><var id="vertex"></b><br></br> </var></b>
+				AXIS OF SYMMETRY: <b><var id="aos"></var></b></p>
+			<p id="extras">	SUM OF ROOTS: <b><var id="sum"></var></b></p>
+			<p id="extras">	PRODUCT OF ROOTS: <b><var id="multiply"></var></b></p>
+
+				<var class="displayLetters" id="displayA">A</var>x<sup>2</sup> + <var id="displayB" class="displayLetters">B</var>x + <var class="displayLetters" id="displayC">C = 0</var>
+			</p>
+		</div>
+		<div class="inputBtns">
+
+    <p class="lol">A: <input oninput="updateText('inputA','displayA','a')" class="textboxclass"  type="number" id="inputA"><br><br></p>
+		<p class="lol">B:	<input oninput="updateText('inputB','displayB','b')" class="textboxclass"  type="number" id="inputB"><br><br></p>
+		<p class="lol">C:	<input oninput="updateText('inputC','displayC','c')" class="textboxclass"  type="number" id="inputC"><br></p>
+<input type="button" style="vertical-align:middle" class="button" value="CLEAR" onclick="cancel()"></input><br></br>
+<form>
+<input type="button" value="SOLVE BY COMPLETION OF SQUARE" class="button2" onclick="window.location.href='javascript-completing-the-square.html'" />
+</form>
+	</div>
+
+	</div>
+	<body onload="plot();">
+
+	  <div class="layer">
+	  <section id="plotSettings">
+	    <label for="xMin">xMin: </label> value: <input type=number id="xMin" value=-5 step=5 oninput="plot();">
+	    <p></p>
+	    <label for="xMin">xMax: </label> value: <input type=number id="xMax" value=5 step=5 oninput="plot();">
+	    <p></p>
+	    <label for="yMin">yMin: </label> value: <input type=number id="yMin" value=-5 step=5 oninput="plot();">
+	    <p></p>
+	    <label for="yMax">yMax: </label> value: <input type=number id="yMax" value=5 step=5 oninput="plot();">
+	    <p></p>
+	    <label for="color">Color: </label> value: <input type=color id="color" onchange="plot();">
+	    <p></p>
+	    <label for="function">Function to plot: </label>
+	    <input id="function" type="text" value="sin(x)" onchange="plot();">
+	    <p></p>
+	    <button onclick="plot();">GRAPH!</button>
+
+	  </section>
+
+		<script type="text/javascript">
+		var parameters = {
+		target: '#myFunction',
+		data: [{
+		  fn: 'sin(x)',
+		  color: 'red'
+		}],
+		grid: true,
+		yAxis: {domain: [-1, 1]},
+		xAxis: {domain: [0, 2*Math.PI]}
+		};
+
+		function plot() {
+		var f = document.querySelector("#function").value;
+		var xMin = document.querySelector("#xMin").value;
+		var xMax = document.querySelector("#xMax").value;
+		var yMin = document.querySelector("#yMin").value;
+		var yMax = document.querySelector("#yMax").value;
+		var color = document.querySelector("#color").value;
+
+		parameters.data[0].fn = f;
+		parameters.xAxis.domain = [xMin, xMax];
+		parameters.yAxis.domain = [yMin, yMax];
+		parameters.data[0].color = color;
+
+		functionPlot(parameters);
+		}
+
+		</script>
+		  <section id="plot">
+		    <div id="myFunction"></div>
+		  </section>
+
+
+<script type="text/javascript">
+	var coefficient;
+	var remainder;
+	var imaginary;
+	var imaginaryGate;
+
+	function cancel() {
+	document.getElementById('inputA').value = null;
+	document.getElementById('inputB').value = null;
+	document.getElementById('inputC').value = null;
+	}
+
+	function solve() {
+		var a = Number(document.getElementById('inputA').value);
+		var b = Number(document.getElementById('inputB').value);
+		var c = Number(document.getElementById('inputC').value);
+   	var displayRoot;
+		var discrimante = Math.pow(b, 2) - (4 * a * c);
+	  var Vx = ((-b)/(2*a));
+		var sor = ((-b)/(a));
+		var pro = ((c)/(a));
+
+
+		var Vy = (Math.pow(Vx, 2)*a) + (b * Vx) +c;
+
+		var sqrtDiscrimante= simplfyRad(discrimante);
+
+		var roots = displayRoots((2*a),b,sqrtDiscrimante);
+
+		if (roots[0]==roots[1]) {
+
+			displayRoot = roots[0];
+		}
+		else{
+			displayRoot=roots[0]+" and "+roots[1];
+		}
+		document.getElementById('test').innerHTML = displayRoot;
+		document.getElementById('test').style.display='block';
+		document.getElementById('discrimante').innerHTML = Math.round(discrimante);
+		document.getElementById('aos').innerHTML = "x = " + (Vx);
+		document.getElementById('sum').innerHTML =  (sor);
+		document.getElementById('multiply').innerHTML =  (pro);
+		document.getElementById('vertex').innerHTML ="("+Vx+" , "+Vy+")";
+	}
+	function displayRoots(twoa,b,sqrt4ac) {
+		var res1;
+		var res2;
+		var openingP = "(";
+		var closingP = "  )";
+		var gcd= gcd_more_than_two_numbers([twoa,b,coefficient]);
+
+		if (imaginaryGate && remainder ==1) {
+			console.log("sqrt4ac is :" + sqrt4ac); console.log("__________"); console.log("imaginary is :" + imaginary); console.log("__________"); console.log("gcd is :" + gcd);
+			console.log("__________"); console.log("b is :" + b); console.log("__________"); console.log("twoa is :" + twoa); console.log("__________"); console.log("________________");
+
+
+
+			res1 = '-'+b/twoa + " - "+ '1i' + " ";
+			res2 = "-"+b/twoa + " + "+ '1i' + " ";
+		}else{
+			res1 = '(-'+b + " - "+ sqrt4ac + ") /"+twoa;
+			res2 = "(-"+b + " + "+ sqrt4ac + ") /"+twoa;
+			if (remainder == 1|| remainder == 0) {
+
+				res1 = '(-'+b + " - "+ (coefficient*remainder) + ") /"+twoa;
+				res2 = "(-"+b + " + "+ (coefficient*remainder) + ") /"+twoa;
+
+				res1 = eval(res1);
+				res2 = eval(res2);
+			}
+			if (gcd!=1) {
+				var newCoefficient = coefficient/gcd;
+				var newB = '-'+(b/gcd);
+				var newA = "/"+twoa/gcd;
+				switch(true){
+					case(newB.match(/\d+/)==0):
+						newB="";
+					case(newA.match(/\d+/)==1):
+						newA= "";
+						openingP ="";
+						closingP = "";
+					case(newCoefficient==1):
+						newCoefficient= "";
+					case(true):
+						break;
+				}
+				res1 = openingP + newB + " - "+ newCoefficient+imaginary+"√("+remainder+")" + closingP+newA;
+				res2 = openingP +newB + " + "+ newCoefficient+imaginary+"√("+remainder+")" +closingP+newA;
+			}
+		}
+
+		return  [res1,res2];
+	}
+	function simplfyRad(num) {
+		imaginary = "";
+		if (Math.abs(num)!=num) {
+			imaginary= "i";
+			num = Math.abs(num)
+		}
+		coefficient= 1;
+		remainder = num;
+		var out;
+		for (var i = 1; (i*i) <= num; i++) {
+			if (num %(i*i)== 0){
+		 		 coefficient= i;
+		 		 remainder = num / (i*i);
+			}
+		}
+		switch(true){
+			case(coefficient==1):
+				out = imaginary + "√("+remainder+")";
+				break;
+			case(coefficient==1 && remainder == 1):
+				out = "1"+imaginary;
+				break;
+			case(remainder==1):
+				out = coefficient.toString() +imaginary;
+				break;
+			case(true):
+				out = coefficient + imaginary +"√("+remainder+")";
+				break;
+
+		}
+		if (imaginary=="i") {
+			imaginaryGate=true;
+		}else{
+			imaginaryGate=false;
+		}
+		if (remainder == 0) {
+			return (0);
+		}else{
+			return(out);
+		}
+
+	}
+
+	function updateText(inputId,displayId,base) {
+		var displayOut = document.getElementById(displayId);
+		var inputVal = document.getElementById(inputId).value;
+		if (inputVal == "") {
+
+			displayOut.innerHTML = base;
+			return
+
+		} else{
+			displayOut.innerHTML = Number(inputVal);
+		}
+		solve();
+	}
+
+	function gcd_more_than_two_numbers(input) {
+	  if (toString.call(input) !== "[object Array]")
+	        return  false;
+	  var len, a, b;
+		len = input.length;
+		if ( !len ) {
+			return null;
+		}
+		a = input[ 0 ];
+		for ( var i = 1; i < len; i++ ) {
+			b = input[ i ];
+			a = gcd_two_numbers( a, b );
+		}
+		return a;
+	}
+
+	function gcd_two_numbers(x, y) {
+	  if ((typeof x !== 'number') || (typeof y !== 'number'))
+	    return false;
+	  x = Math.abs(x);
+	  y = Math.abs(y);
+	  while(y) {
+	    var t = y;
+	    y = x % y;
+	    x = t;
+	  }
+	  return x;
+	}
+
+</script>
+<br></br><p> NOTE** - In order to use the graph copy the equation from the standard
+	 formula after when user enters the inputs , and then paste it onto the Function to plot
+	 box. </p>
+	<p> NOTE** - Also make sure to use the caret (^) symbol, after ax. </p>
+</body>
+
+</html>
